@@ -1,2 +1,2 @@
-# unojs
-Node.js implementation of Uno
+# unopy
+Python implementation of Uno playable over LAN
