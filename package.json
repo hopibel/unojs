@@ -1,0 +1,7 @@
+{
+	"name": "unojs",
+	"version": "0.0.1",
+	"dependencies": {
+		"socket.io": "^2.0.4"
+	}
+}
