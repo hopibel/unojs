@@ -205,6 +205,10 @@ module.exports = (io) => {
       Uno.draw_card(socket);
     });
 
+    socket.on('pass', () => {
+      Uno.pass(socket);
+    });
+
     socket.on('disconnect', () => {
       console.log('User disconnected');
     });
