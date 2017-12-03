@@ -6,6 +6,7 @@ const Uno = {
   direction: 1,
   deck: [],
   discard: [],
+  has_drawn: false,
 
   generate_deck: () => {
     const colors = ['red', 'yellow', 'green', 'blue'];
@@ -105,6 +106,8 @@ const Uno = {
   },
 
   play_turn: (socket, turndata) => {
+    // TODO: separate validation and card processing
+    // use move types: card, draw, pass
     if (socket !== this.players[this.turn].socket) {
       socket.emit('error', 'It is not your turn');
       return;
@@ -120,9 +123,7 @@ const Uno = {
       socket.emit('error', "You don't even have that card, cheater!");
     }
 
-    // TODO: drawing a card
-    const topCard = this.discard[-1];
-    if (card.type === topCard.type || card.color === topCard.color) {
+    if (this.is_playable(card)) {
       this.discard.push(card);
       this.players[this.turn].hand.splice(cardIndex, 1);
 
@@ -131,6 +132,43 @@ const Uno = {
     } else {
       socket.emit('error', 'Illegal move');
     }
+
+    this.has_drawn = false;
+  },
+
+  draw_card: (socket) => {
+    if (socket !== this.players[this.turn].socket) {
+      socket.emit('error', 'It is not your turn');
+      return;
+    } else if (this.has_drawn) {
+      socket.emit('error', 'Already drawn a card this turn');
+      return;
+    }
+
+    const card = this.draw(1);
+    this.players[this.turn].hand.push(card);
+    socket.emit('update', {
+      turn: this.turn,
+      your_turn: this.turn,
+      current_card: this.discard[-1],
+      draw_cards: [card],
+    });
+
+    this.has_drawn = true;
+  },
+
+  pass: (socket) => {
+    // end turn after drawing and still no playable cards
+    if (socket === this.players[this.turn].socket) {
+      this.turn = (this.turn + this.direction) % this.players.length;
+      this.has_drawn = false;
+      this.send_turndata();
+    }
+  },
+
+  is_playable: (card) => {
+    const topCard = this.discard[-1];
+    return card.type === topCard.type || card.color === topCard.color;
   },
 
   send_turndata: () => {
@@ -140,7 +178,7 @@ const Uno = {
         turn: this.turn,
         your_turn: i,
         current_card: this.discard[-1],
-        // hand: this.players[i].hand,
+        draw_cards: [],
       };
       this.players[i].socket.emit('update', turndata);
     }
@@ -161,6 +199,10 @@ module.exports = (io) => {
 
     socket.on('move', (turndata) => {
       Uno.play_turn(socket, turndata);
+    });
+
+    socket.on('draw', () => {
+      Uno.draw_card(socket);
     });
 
     socket.on('disconnect', () => {
