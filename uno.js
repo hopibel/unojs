@@ -11,7 +11,7 @@ const Uno = {
   generate_deck: () => {
     const colors = ['red', 'yellow', 'green', 'blue'];
     const types = [...Array(10).keys()];
-    // types.concat(['Draw two', 'Reverse', 'Skip']);
+    types.concat(['Skip', 'Reverse', 'Draw Two']);
 
     const deck = [];
     for (let i = 0; i < colors.length; i += 1) {
@@ -28,14 +28,12 @@ const Uno = {
         }
       }
     }
-    /*
     for (let i = 0; i < 4; i += 1) {
       deck.push({
         color: 'black',
         type: 'Wild',
       });
     }
-    */
     this.shuffle_deck(deck);
     return deck;
   },
@@ -101,11 +99,19 @@ const Uno = {
   },
 
   draw: (n) => {
+    // Returns an array of n cards, shuffling the discard pile back into the deck if necessary
+    if (n > this.deck.length) {
+      const topCard = this.discard.pop();
+      this.deck = this.deck.concat(this.discard);
+      this.shuffle_deck(this.deck);
+      this.discard = [topCard];
+    }
     const cards = this.deck.splice(this.deck.length - n, this.deck.length);
     return cards;
   },
 
   play_turn: (socket, turndata) => {
+    // Process a turn
     if (socket !== this.players[this.turn].socket) {
       socket.emit('error', 'It is not your turn');
       return;
@@ -122,7 +128,24 @@ const Uno = {
           return;
         }
 
-        // TODO: action cards
+        switch (turndata.card.type) {
+          case 'Skip':
+            this.turn = this.next_turn();
+            break;
+          case 'Reverse':
+            this.direction = -this.direction;
+            break;
+          case 'Draw Two': {
+            const drawCards = this.draw(2);
+            this.send_turndata(this.next_turn(), drawCards);
+            break;
+          }
+          case 'Wild':
+            // Client changes this card's color to the new one
+            break;
+          default:
+            // wtf
+        }
 
         this.discard.push(turndata.card);
         this.players[this.turn].hand.splice(cardIndex, 1);
@@ -144,7 +167,7 @@ const Uno = {
     }
 
     this.has_drawn = false;
-    this.turn = (this.turn + this.direction) % this.players.length;
+    this.turn = this.next_turn();
     for (let playerID = 0; playerID < this.players.length; playerID += 1) {
       this.send_turndata(playerID, []);
     }
@@ -160,12 +183,12 @@ const Uno = {
 
   draw_card: (socket) => {
     const card = this.draw(1);
-    this.players[this.turn].hand.push(card);
+    this.players[this.turn].hand.push(card[0]);
     socket.emit('update', {
       turn: this.turn,
       your_turn: this.turn,
       current_card: this.discard[-1],
-      draw_cards: [card],
+      draw_cards: card,
     });
 
     this.has_drawn = true;
@@ -173,10 +196,18 @@ const Uno = {
 
   is_playable: (card) => {
     const topCard = this.discard[-1];
-    return card.type === topCard.type || card.color === topCard.color;
+    return card.type === topCard.type || card.color === topCard.color || topCard.color === 'black';
+  },
+
+  next_turn: () => {
+    const next = (this.turn + this.direction) % this.players.length;
+    return next;
   },
 
   send_turndata: (playerID, drawCards) => {
+    // Send turn data to this.players[playerID]
+    // playerID: index of player in this.players
+    // drawCards: array of cards this player has drawn
     const turndata = {
       turn: this.turn,
       your_turn: playerID,
