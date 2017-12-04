@@ -70,6 +70,13 @@ Uno.prototype.add_player = (socket, name) => {
     name,
     hand: [],
   });
+
+  // send player list
+  const player_list = [];
+  for (let i = 0; i < this.players.length; i += 1) {
+    player_list.push(this.players[i].name);
+  }
+  this.io.sockets.emit('player list', player_list);
 };
 
 Uno.prototype.start = (socket) => {
