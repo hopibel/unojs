@@ -168,9 +168,11 @@ const Uno = {
         // wtf
     }
 
-    this.check_winner();
-
     this.has_drawn = false;
+    if (this.is_winner()) {
+      this.started = false;
+      return;
+    }
     this.turn = this.next_turn();
     for (let playerID = 0; playerID < this.players.length; playerID += 1) {
       this.send_turndata(playerID, []);
@@ -208,7 +210,7 @@ const Uno = {
     return next;
   },
 
-  check_winner: () => {
+  is_winner: () => {
     if (this.players[this.turn].hand.length === 0) {
       this.io.sockets.emit('game over', {
         winner: {
@@ -216,7 +218,9 @@ const Uno = {
           id: this.turn,
         },
       });
+      return true;
     }
+    return false;
   },
 
   send_turndata: (playerID, drawCards) => {
