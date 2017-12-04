@@ -1,5 +1,58 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 	var socket = io();
+
+	socket.on('host', (message) => {
+		document.getElementById('sampleText').innerHTML = message;
+		//Show the "Start button" here
+		document.getElementById('start').style.display = "inline-block";
+	})
+
+	socket.on('error', (message) => {
+		document.getElementById('sampleText').innerHTML = message;
+	})
+
+	socket.on('player list', (playerList) => {
+		document.getElementById('playerList').innerHTML = "";
+		for(player in playerList){
+			document.getElementById('playerList').innerHTML = document.getElementById('playerList').innerHTML + player;
+			//Update a whole new list of players
+		}
+	})
+
+	socket.on('first-turn', (turndata) => {
+		checkTurn(turndata.turn, turndata.yourTurn);
+		document.getElementById('cardList').innerHTML = '';
+		for (var i = 0; i < turndata.hand.length; i++) {
+			var type = turndata.hand[i].type;
+			var color = turndata.hand[i].color;
+			document.getElementById('cardList').innerHTML = document.getElementById('cardList').innerHTML + type + " " + color + " - ";
+			// console.log(card);
+			//Parse the cards to show up
+		}
+	})
+
+	socket.on('update', (turndata) => {
+		checkTurn(turndata.turn, turndata.yourTurn);
+		if(turndata.drawCards.length > 0){
+			var card = turndata.drawCards;
+		}
+	})
+
+	function checkTurn(gameTurn, myTurn){
+		if (gameTurn === myTurn){
+			//Display that it's your current turn
+			document.getElementById('myTurn').innerHTML = 'MY TURN';
+		}else{
+			document.getElementById('myTurn').innerHTML = 'NOT MY TURN';
+			//Wait for your turn
+			//Could make literally everything else unclickable (to avoid errors or some shit)
+		}
+	}
 </script>
-<h1>Hi</h1>
+<h1 id="sampleText">Hi</h1>
+<h1 id="playerList">PlayerList</h1>
+<h1 id="cardList">CardList</h1>
+<h1 id="myTurn">Turn</h1>
+<button type="button" onclick="socket.emit('join','Dickshit')">Join</button><!--Also hide the Join Button once pressed-->
+<button type="button" onclick="socket.emit('start',)" id="start" style="display:none;">Startoh</button>

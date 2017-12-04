@@ -1,212 +1,264 @@
-const Uno = {
-  players: [],
-  host: null,
-  started: false,
-  turn: 0,
-  direction: 1,
-  deck: [],
-  discard: [],
-  has_drawn: false,
+function Uno(io) {
+  this.players = [];
+  this.host = null;
+  this.started = false;
+  this.turn = 0;
+  this.direction = 1;
+  this.deck = [];
+  this.discard = [];
+  this.hasDrawn = false;
+  this.io = io;
+}
 
-  generate_deck: () => {
-    const colors = ['red', 'yellow', 'green', 'blue'];
-    const types = [...Array(10).keys()];
-    // types.concat(['Draw two', 'Reverse', 'Skip']);
+Uno.prototype.generateDeck = function generateDeck() {
+  const colors = ['red', 'yellow', 'green', 'blue'];
+  const types = [...Array(10).keys()];
+  types.concat(['Skip', 'Reverse', 'Draw Two']);
 
-    const deck = [];
-    for (let i = 0; i < colors.length; i += 1) {
-      for (let j = 0; j < types.length; j += 1) {
+  const deck = [];
+  for (let i = 0; i < colors.length; i += 1) {
+    for (let j = 0; j < types.length; j += 1) {
+      deck.push({
+        color: colors[i],
+        type: types[j],
+      });
+      if (types[j] !== 0) {
         deck.push({
           color: colors[i],
           type: types[j],
         });
-        if (types[j] !== 0) {
-          deck.push({
-            color: colors[i],
-            type: types[j],
-          });
-        }
       }
     }
-    /*
-    for (let i = 0; i < 4; i += 1) {
-      deck.push({
-        color: 'black',
-        type: 'Wild',
-      });
-    }
-    */
-    this.shuffle_deck(deck);
-    return deck;
-  },
-
-  shuffle_deck: (deck) => {
-    const array = deck;
-    for (let i = array.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(Math.random() * (i + 1));
-      const temp = array[i];
-      array[i] = array[j];
-      array[j] = temp;
-    }
-  },
-
-  set_host: (socket) => {
-    this.host = socket;
-  },
-
-  add_player: (socket, name) => {
-    if (this.started === true) {
-      socket.emit('error', 'Game already started');
-      return;
-    }
-
-    if (this.host === null) {
-      this.set_host(socket);
-    }
-
-    this.players.push({
-      socket,
-      name,
-      hand: [],
+  }
+  for (let i = 0; i < 4; i += 1) {
+    deck.push({
+      color: 'black',
+      type: 'Wild',
     });
-  },
+  }
+  this.shuffleDeck(deck);
+  return deck;
+};
 
-  start: (socket) => {
-    if (socket !== this.host) {
-      socket.emit('error', 'You are not the host');
-    }
+Uno.prototype.shuffleDeck = function shuffleDeck(deck) {
+  const array = deck;
+  for (let i = array.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+};
 
-    this.deck = this.generate_deck();
-    this.started = true;
-    this.turn = 0;
+Uno.prototype.setHost = function setHost(socket) {
+  this.host = socket;
+};
 
-    // deal hands
-    for (let i = 0; i < this.players.length; i += 1) {
-      this.players[i].hand = this.draw(7);
-    }
+Uno.prototype.addPlayer = function addPlayer(socket, name) {
+  if (this.started === true) {
+    socket.emit('error', 'Game already started');
+    return;
+  }
 
-    // play the first card
-    this.discard.push(this.deck.pop());
+  if (this.host === null) {
+    this.setHost(socket);
+    socket.emit('host', 'You are the host');
+  }
 
-    // send starting state
-    for (let i = 0; i < this.players.length; i += 1) {
-      const turndata = {
-        turn: this.turn,
-        your_turn: i,
-        current_card: this.discard[-1],
-        hand: this.players[i].hand,
-      };
-      this.players[i].socket.emit('first-turn', turndata);
-    }
-  },
+  this.players.push({
+    socket,
+    name,
+    hand: [],
+  });
 
-  draw: (n) => {
-    const cards = this.deck.splice(this.deck.length - n, this.deck.length);
-    return cards;
-  },
+  // send player list
+  const playerList = [];
+  for (let i = 0; i < this.players.length; i += 1) {
+    playerList.push(this.players[i].name);
+  }
+  this.io.sockets.emit('player list', playerList);
+};
 
-  play_turn: (socket, turndata) => {
-    // TODO: separate validation and card processing
-    // use move types: card, draw, pass
-    if (socket !== this.players[this.turn].socket) {
-      socket.emit('error', 'It is not your turn');
-      return;
-    }
+Uno.prototype.start = function start(socket) {
+  if (socket !== this.host) {
+    socket.emit('error', 'You are not the host');
+  }
 
-    const { card } = turndata;
-    // check if player has that card
-    function findCard(element) {
-      return element.color === this.color && element.type === this.type;
-    }
-    const cardIndex = this.players[this.turn].hand.findIndex(findCard, card);
-    if (cardIndex === -1) {
-      socket.emit('error', "You don't even have that card, cheater!");
-    }
+  this.deck = this.generateDeck();
+  this.started = true;
+  this.turn = 0;
 
-    if (this.is_playable(card)) {
-      this.discard.push(card);
-      this.players[this.turn].hand.splice(cardIndex, 1);
+  // deal hands
+  for (let i = 0; i < this.players.length; i += 1) {
+    this.players[i].hand = this.draw(7);
+  }
 
-      this.turn = (this.turn + this.direction) % this.players.length;
-      this.send_turndata();
-    } else {
-      socket.emit('error', 'Illegal move');
-    }
+  // play the first card
+  this.discard.push(this.deck.pop());
 
-    this.has_drawn = false;
-  },
-
-  draw_card: (socket) => {
-    if (socket !== this.players[this.turn].socket) {
-      socket.emit('error', 'It is not your turn');
-      return;
-    } else if (this.has_drawn) {
-      socket.emit('error', 'Already drawn a card this turn');
-      return;
-    }
-
-    const card = this.draw(1);
-    this.players[this.turn].hand.push(card);
-    socket.emit('update', {
+  // send starting state
+  for (let i = 0; i < this.players.length; i += 1) {
+    const turndata = {
       turn: this.turn,
-      your_turn: this.turn,
-      current_card: this.discard[-1],
-      draw_cards: [card],
+      yourTurn: i,
+      currentCard: this.discard[-1],
+      hand: this.players[i].hand,
+    };
+    this.players[i].socket.emit('first-turn', turndata);
+  }
+};
+
+Uno.prototype.draw = function draw(n) {
+  // Returns an array of n cards, shuffling the discard pile back into the deck if necessary
+  if (n > this.deck.length) {
+    const topCard = this.discard.pop();
+    this.deck = this.deck.concat(this.discard);
+    this.shuffleDeck(this.deck);
+    this.discard = [topCard];
+  }
+  const cards = this.deck.splice(this.deck.length - n, this.deck.length);
+  return cards;
+};
+
+Uno.prototype.playTurn = function playTurn(socket, turndata) {
+  // Process a turn
+  if (socket !== this.players[this.turn].socket) {
+    socket.emit('error', 'It is not your turn');
+    return;
+  }
+
+  switch (turndata.type) {
+    case 'card': {
+      const cardIndex = this.findCard(turndata.card);
+      if (cardIndex === -1) {
+        socket.emit('error', "You don't even have that card!");
+        return;
+      } else if (this.isPlayable(turndata.card) === false) {
+        socket.emit('error', 'Illegal move');
+        return;
+      }
+
+      switch (turndata.card.type) {
+        case 'Skip':
+          this.turn = this.nextTurn();
+          break;
+        case 'Reverse':
+          this.direction = -this.direction;
+          break;
+        case 'Draw Two': {
+          const drawCards = this.draw(2);
+          this.sendTurndata(this.nextTurn(), drawCards);
+          break;
+        }
+        case 'Wild':
+          // Client changes this card's color to the new one
+          break;
+        default:
+          // wtf
+      }
+
+      this.discard.push(turndata.card);
+      this.players[this.turn].hand.splice(cardIndex, 1);
+      break;
+    }
+    case 'draw': {
+      if (this.hasDrawn) {
+        socket.emit('error', 'Already drawn a card this turn');
+        return;
+      }
+      const drawCard = this.drawCard(socket);
+      this.sendTurndata(this.turn, [drawCard]);
+      return;
+    }
+    case 'pass':
+      break;
+    default:
+      // wtf
+  }
+
+  this.hasDrawn = false;
+  if (this.isWinner()) {
+    this.started = false;
+    return;
+  }
+  this.turn = this.nextTurn();
+  for (let playerID = 0; playerID < this.players.length; playerID += 1) {
+    this.sendTurndata(playerID, []);
+  }
+};
+
+Uno.prototype.findCard = function findCard(card) {
+  // check if current player has that card
+  function findCard(element) {
+    return element.color === this.color && element.type === this.type;
+  }
+  return this.players[this.turn].hand.findIndex(findCard, card);
+};
+
+Uno.prototype.drawCard = function drawCard(socket) {
+  const card = this.draw(1);
+  this.players[this.turn].hand.push(card[0]);
+  socket.emit('update', {
+    turn: this.turn,
+    yourTurn: this.turn,
+    currentCard: this.discard[-1],
+    drawCards: card,
+  });
+
+  this.hasDrawn = true;
+};
+
+Uno.prototype.isPlayable = function isPlayable(card) {
+  const topCard = this.discard[-1];
+  return card.type === topCard.type || card.color === topCard.color || topCard.color === 'black';
+};
+
+Uno.prototype.nextTurn = function nextTurn() {
+  const next = (this.turn + this.direction) % this.players.length;
+  return next;
+};
+
+Uno.prototype.isWinner = function isWinner() {
+  if (this.players[this.turn].hand.length === 0) {
+    this.io.sockets.emit('game over', {
+      winner: {
+        name: this.players[this.turn].name,
+        id: this.turn,
+      },
     });
+    return true;
+  }
+  return false;
+};
 
-    this.has_drawn = true;
-  },
-
-  pass: (socket) => {
-    // end turn after drawing and still no playable cards
-    if (socket === this.players[this.turn].socket) {
-      this.turn = (this.turn + this.direction) % this.players.length;
-      this.has_drawn = false;
-      this.send_turndata();
-    }
-  },
-
-  is_playable: (card) => {
-    const topCard = this.discard[-1];
-    return card.type === topCard.type || card.color === topCard.color;
-  },
-
-  send_turndata: () => {
-    // TODO: take draw cards as arg for next player
-    for (let i = 0; i < this.players.length; i += 1) {
-      const turndata = {
-        turn: this.turn,
-        your_turn: i,
-        current_card: this.discard[-1],
-        draw_cards: [],
-      };
-      this.players[i].socket.emit('update', turndata);
-    }
-  },
+Uno.prototype.sendTurndata = function sendTurndata(playerID, cards) {
+  // Send turn data to this.players[playerID]
+  // playerID: index of player in this.players
+  // drawCards: array of cards this player has drawn
+  const turndata = {
+    turn: this.turn,
+    yourTurn: playerID,
+    currentCard: this.discard[-1],
+    drawCards: cards,
+  };
+  this.players[playerID].socket.emit('update', turndata);
 };
 
 module.exports = (io) => {
+  const game = new Uno(io);
   io.on('connection', (socket) => {
     console.log('User connected');
 
     socket.on('join', (name) => {
-      Uno.add_player(socket, name);
+      game.addPlayer(socket, name);
     });
 
     socket.on('start', () => {
-      Uno.start(socket);
+      game.start(socket);
     });
 
     socket.on('move', (turndata) => {
-      Uno.play_turn(socket, turndata);
-    });
-
-    socket.on('draw', () => {
-      Uno.draw_card(socket);
-    });
-
-    socket.on('pass', () => {
-      Uno.pass(socket);
+      game.playTurn(socket, turndata);
     });
 
     socket.on('disconnect', () => {
