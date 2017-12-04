@@ -61,6 +61,7 @@ const Uno = {
 
     if (this.host === null) {
       this.set_host(socket);
+      socket.emit('host', 'You are the host');
     }
 
     this.players.push({
