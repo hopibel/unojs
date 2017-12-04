@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>UNO</title>
+	<link rel="stylesheet" type="text/css" href="css/uno.css">
+	<link rel="stylesheet" type="text/css" href="css/materialize_icons.css">
+</head>
+<body>
+	<!-- <div class="container" id="start-menu">
+		<input type="text" name="player_name" id="player-name"/>
+
+		<button id="start" class="card blue"><span class="label">Host</span></button>
+		<button id="join" class="card green"><span class="label">Join</span></button>
+	</div> -->
+	<!-- <div id="error-message"></div> -->
+	<!-- <div id="prompt-message"></div> -->
+	<div class="container">
+		<header><h1 id="title">UNO</h1></header>
+		<ul id="players">
+			<li class="active"><span class="name">Hope</span></li>
+			<li><span class="name">Andrew</span></li>
+			<li><span class="name">Clyde</span></li>
+		</ul>
+		<div id="table-deck">
+			<div id="stock-pile" class="deck"></div>
+			<div id="current-card" class="deck"></div>
+			<div id="discard-pile" class="deck"></div>
+		</div>
+		<h2 id="game-message">Enter your messages here</h2>
+		<div id="hand-deck" class="deck"></div> 
+		<button type="button" id="pass-btn"><span class="material-icons">reply_all</span> Pass</button>
+	</div>
+	<script type="text/javascript" src="create_card.js"></script>
+</body>
+</html>
