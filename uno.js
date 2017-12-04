@@ -7,6 +7,7 @@ const Uno = {
   deck: [],
   discard: [],
   has_drawn: false,
+  io: null,
 
   generate_deck: () => {
     const colors = ['red', 'yellow', 'green', 'blue'];
@@ -166,6 +167,8 @@ const Uno = {
         // wtf
     }
 
+    this.check_winner();
+
     this.has_drawn = false;
     this.turn = this.next_turn();
     for (let playerID = 0; playerID < this.players.length; playerID += 1) {
@@ -204,6 +207,17 @@ const Uno = {
     return next;
   },
 
+  check_winner: () => {
+    if (this.players[this.turn].hand.length === 0) {
+      this.io.sockets.emit('game over', {
+        winner: {
+          name: this.players[this.turn].name,
+          id: this.turn,
+        },
+      });
+    }
+  },
+
   send_turndata: (playerID, drawCards) => {
     // Send turn data to this.players[playerID]
     // playerID: index of player in this.players
@@ -219,6 +233,7 @@ const Uno = {
 };
 
 module.exports = (io) => {
+  Uno.io = io;
   io.on('connection', (socket) => {
     console.log('User connected');
 
