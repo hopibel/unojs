@@ -106,45 +106,59 @@ const Uno = {
   },
 
   play_turn: (socket, turndata) => {
-    // TODO: separate validation and card processing
-    // use move types: card, draw, pass
     if (socket !== this.players[this.turn].socket) {
       socket.emit('error', 'It is not your turn');
       return;
     }
 
-    const { card } = turndata;
-    // check if player has that card
-    function findCard(element) {
-      return element.color === this.color && element.type === this.type;
-    }
-    const cardIndex = this.players[this.turn].hand.findIndex(findCard, card);
-    if (cardIndex === -1) {
-      socket.emit('error', "You don't even have that card, cheater!");
-    }
+    switch (turndata.type) {
+      case 'card': {
+        const cardIndex = this.find_card(turndata.card);
+        if (cardIndex === -1) {
+          socket.emit('error', "You don't even have that card!");
+          return;
+        } else if (this.is_playable(turndata.card) === false) {
+          socket.emit('error', 'Illegal move');
+          return;
+        }
 
-    if (this.is_playable(card)) {
-      this.discard.push(card);
-      this.players[this.turn].hand.splice(cardIndex, 1);
+        // TODO: action cards
 
-      this.turn = (this.turn + this.direction) % this.players.length;
-      this.send_turndata();
-    } else {
-      socket.emit('error', 'Illegal move');
+        this.discard.push(turndata.card);
+        this.players[this.turn].hand.splice(cardIndex, 1);
+        break;
+      }
+      case 'draw': {
+        if (this.has_drawn) {
+          socket.emit('error', 'Already drawn a card this turn');
+          return;
+        }
+        const drawCard = this.draw_card(socket);
+        this.send_turndata(this.turn, [drawCard]);
+        return;
+      }
+      case 'pass':
+        break;
+      default:
+        // wtf
     }
 
     this.has_drawn = false;
+    this.turn = (this.turn + this.direction) % this.players.length;
+    for (let playerID = 0; playerID < this.players.length; playerID += 1) {
+      this.send_turndata(playerID, []);
+    }
+  },
+
+  find_card: (card) => {
+    // check if current player has that card
+    function findCard(element) {
+      return element.color === this.color && element.type === this.type;
+    }
+    return this.players[this.turn].hand.findIndex(findCard, card);
   },
 
   draw_card: (socket) => {
-    if (socket !== this.players[this.turn].socket) {
-      socket.emit('error', 'It is not your turn');
-      return;
-    } else if (this.has_drawn) {
-      socket.emit('error', 'Already drawn a card this turn');
-      return;
-    }
-
     const card = this.draw(1);
     this.players[this.turn].hand.push(card);
     socket.emit('update', {
@@ -157,31 +171,19 @@ const Uno = {
     this.has_drawn = true;
   },
 
-  pass: (socket) => {
-    // end turn after drawing and still no playable cards
-    if (socket === this.players[this.turn].socket) {
-      this.turn = (this.turn + this.direction) % this.players.length;
-      this.has_drawn = false;
-      this.send_turndata();
-    }
-  },
-
   is_playable: (card) => {
     const topCard = this.discard[-1];
     return card.type === topCard.type || card.color === topCard.color;
   },
 
-  send_turndata: () => {
-    // TODO: take draw cards as arg for next player
-    for (let i = 0; i < this.players.length; i += 1) {
-      const turndata = {
-        turn: this.turn,
-        your_turn: i,
-        current_card: this.discard[-1],
-        draw_cards: [],
-      };
-      this.players[i].socket.emit('update', turndata);
-    }
+  send_turndata: (playerID, drawCards) => {
+    const turndata = {
+      turn: this.turn,
+      your_turn: playerID,
+      current_card: this.discard[-1],
+      draw_cards: drawCards,
+    };
+    this.players[playerID].socket.emit('update', turndata);
   },
 };
 
@@ -199,14 +201,6 @@ module.exports = (io) => {
 
     socket.on('move', (turndata) => {
       Uno.play_turn(socket, turndata);
-    });
-
-    socket.on('draw', () => {
-      Uno.draw_card(socket);
-    });
-
-    socket.on('pass', () => {
-      Uno.pass(socket);
     });
 
     socket.on('disconnect', () => {
