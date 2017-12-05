@@ -97,7 +97,7 @@ Uno.prototype.start = function start(socket) {
 
   // deal hands
   for (let i = 0; i < this.players.length; i += 1) {
-    this.players[i].hand = this.draw(7);
+    this.draw(i, 7);
   }
 
   // play the first card
