@@ -1,3 +1,13 @@
+@font-face{
+	font-family: "Oswald Light";
+	src: url('fonts/Oswald-Light.ttf');
+}
+
+@font-face{
+	font-family: "Oswald";
+	src: url('fonts/Oswald-Regular.ttf');
+}
+
 *{
 	box-sizing: border-box;
 }
@@ -250,7 +260,7 @@ header{
 	border: 0.5em solid #FFF;
 	border-color: #EF5350 #FFEE58 #8dcf42 #42A5F5;
 	border-radius: 4px;
-	box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 	filter: brightness(110%);
 }
 .red{

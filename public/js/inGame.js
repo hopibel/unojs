@@ -74,6 +74,10 @@ socket.on('illegal move', (card) => {
 });
 
 socket.on('game over', (winner) => {
+	console.log(winner);
+	console.log(winner.name);
+	console.log(winner.id);
+
 	var players = document.getElementById("players").children;
 	var output = document.getElementById("game-message").innerHTML = winner.name + " has won the game!";
 	players[winner.id].className = "winner";
