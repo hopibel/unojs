@@ -1,4 +1,9 @@
 function Uno(io) {
+  this.io = io;
+  this.init();
+}
+
+Uno.prototype.init = function init() {
   this.players = [];
   this.host = null;
   this.started = false;
@@ -7,8 +12,7 @@ function Uno(io) {
   this.deck = [];
   this.discard = [];
   this.hasDrawn = false;
-  this.io = io;
-}
+};
 
 Uno.prototype.generateDeck = function generateDeck() {
   const colors = ['red', 'yellow', 'green', 'blue'];
@@ -178,7 +182,7 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
 
   this.hasDrawn = false;
   if (this.isWinner()) {
-    this.started = false;
+    this.init();
     return;
   }
   this.turn = this.nextTurn();
