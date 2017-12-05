@@ -134,6 +134,7 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
   switch (turndata.type) {
     case 'card': {
       const cardIndex = this.findCard(turndata.card);
+      console.log(cardIndex);
       if (cardIndex === -1) {
         socket.emit('status', "You don't even have that card!");
         return;
@@ -142,6 +143,7 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
         return;
       }
 
+      console.log(turndata);
       switch (turndata.card.type) {
         case 'Skip':
           this.turn = this.nextTurn();
@@ -187,12 +189,14 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
   }
   this.turn = this.nextTurn();
   for (let playerID = 0; playerID < this.players.length; playerID += 1) {
+    console.log("Anything")
     this.sendTurndata(playerID, []);
   }
 };
 
 Uno.prototype.findCard = function findCard(card) {
   // check if current player has that card
+  console.log(card + "\n" + this.players[this.turn].hand);
   function matchCard(element) {
     return element.color === this.color && element.type === this.type;
   }
@@ -247,6 +251,8 @@ Uno.prototype.sendTurndata = function sendTurndata(playerID, cards) {
     drawCards: cards,
   };
   this.players[playerID].socket.emit('update', turndata);
+
+  console.log(turndata);
 };
 
 module.exports = (io) => {
