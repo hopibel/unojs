@@ -97,7 +97,7 @@ Uno.prototype.start = function start(socket) {
 
   // deal hands
   for (let i = 0; i < this.players.length; i += 1) {
-    this.players[i].hand = this.draw(7);
+    this.draw(i, 7);
   }
 
   // play the first card
@@ -115,7 +115,7 @@ Uno.prototype.start = function start(socket) {
   }
 };
 
-Uno.prototype.draw = function draw(n) {
+Uno.prototype.draw = function draw(playerID, n) {
   // Returns an array of n cards, shuffling the discard pile back into the deck if necessary
   if (n > this.deck.length) {
     const topCard = this.discard.pop();
@@ -124,11 +124,13 @@ Uno.prototype.draw = function draw(n) {
     this.discard = [topCard];
   }
   const cards = this.deck.splice(this.deck.length - n, this.deck.length);
+  this.players[playerID].hand = this.players[playerID].hand.concat(cards);
   return cards;
 };
 
 Uno.prototype.playTurn = function playTurn(socket, turndata) {
   // Process a turn
+  console.log(this.turn);
   if (this.started === false) {
     socket.emit('status', 'No game running');
   }
@@ -136,6 +138,8 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
     socket.emit('status', 'It is not your turn');
     return;
   }
+
+  let skip = false;
 
   switch (turndata.type) {
     case 'card': {
@@ -150,13 +154,13 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
 
       switch (turndata.card.type) {
         case 'Skip':
-          this.turn = this.nextTurn();
+          skip = true;
           break;
         case 'Reverse':
           this.direction = -this.direction;
           break;
         case 'Draw Two': {
-          const drawCards = this.draw(2);
+          const drawCards = this.draw(this.nextTurn(), 2);
           this.sendTurndata(this.nextTurn(), drawCards);
           break;
         }
@@ -176,8 +180,9 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
         socket.emit('status', 'Already drawn a card this turn');
         return;
       }
-      const drawCard = this.drawCard(socket);
-      this.sendTurndata(this.turn, [drawCard]);
+      const drawCards = this.draw(this.turn, 1);
+      this.hasDrawn = true;
+      this.sendTurndata(this.turn, drawCards);
       return;
     }
     case 'pass':
@@ -195,6 +200,9 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
     return;
   }
   this.turn = this.nextTurn();
+  if (skip) {
+    this.turn = this.nextTurn();
+  }
   for (let playerID = 0; playerID < this.players.length; playerID += 1) {
     this.sendTurndata(playerID, []);
   }
@@ -238,10 +246,8 @@ Uno.prototype.nextTurn = function nextTurn() {
 Uno.prototype.isWinner = function isWinner() {
   if (this.players[this.turn].hand.length === 0) {
     this.io.sockets.emit('game over', {
-      winner: {
-        name: this.players[this.turn].name,
-        id: this.turn,
-      },
+      name: this.players[this.turn].name,
+      id: this.turn,
     });
     return true;
   }
