@@ -138,7 +138,7 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
         socket.emit('status', "You don't even have that card!");
         return;
       } else if (this.isPlayable(turndata.card) === false) {
-        socket.emit('status', 'Illegal move');
+        socket.emit('illegal move', turndata.card);
         return;
       }
 
