@@ -249,6 +249,22 @@ Uno.prototype.sendTurndata = function sendTurndata(playerID, cards) {
   this.players[playerID].socket.emit('update', turndata);
 };
 
+Uno.prototype.handleDisconnect = function handleDisconnect(socket) {
+  const index = this.players.findIndex(function matchSocket(element) {
+    return element.socket === this;
+  }, socket);
+  if (index !== -1) {
+    this.players.splice(index, 1);
+  }
+  if (this.players.length > 0) {
+    if (socket === this.host) {
+      this.host = this.players[0].socket;
+    }
+  } else {
+    this.init();
+  }
+};
+
 module.exports = (io) => {
   const game = new Uno(io);
   io.on('connection', (socket) => {
@@ -267,8 +283,7 @@ module.exports = (io) => {
     });
 
     socket.on('disconnect', () => {
-      // game.handleDisconnect(socket);
-      // if game is ongoing, remove the player and send new player list
+      game.handleDisconnect(socket);
       console.log('User disconnected');
     });
   });
