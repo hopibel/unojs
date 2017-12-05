@@ -129,6 +129,9 @@ Uno.prototype.draw = function draw(n) {
 
 Uno.prototype.playTurn = function playTurn(socket, turndata) {
   // Process a turn
+  if (this.started === false) {
+    socket.emit('status', 'No game running');
+  }
   if (socket !== this.players[this.turn].socket) {
     socket.emit('status', 'It is not your turn');
     return;
