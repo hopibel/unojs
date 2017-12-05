@@ -210,7 +210,8 @@ Uno.prototype.drawCard = function drawCard(socket) {
 
 Uno.prototype.isPlayable = function isPlayable(card) {
   const topCard = this.discard[this.discard.length - 1];
-  return card.type === topCard.type || card.color === topCard.color || topCard.color === 'black';
+  return card.type === topCard.type || card.type === 'Wild'
+    || card.color === topCard.color || topCard.color === 'black';
 };
 
 Uno.prototype.nextTurn = function nextTurn() {
@@ -262,6 +263,8 @@ module.exports = (io) => {
     });
 
     socket.on('disconnect', () => {
+      // game.handleDisconnect(socket);
+      // if game is ongoing, remove the player and send new player list
       console.log('User disconnected');
     });
   });
