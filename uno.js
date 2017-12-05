@@ -188,8 +188,8 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
     case 'pass':
       if (this.hasDrawn === false) {
         socket.emit('status', 'You have to draw a card first');
+        return;
       }
-      return;
     default:
       // wtf
   }
