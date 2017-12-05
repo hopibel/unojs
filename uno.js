@@ -59,6 +59,7 @@ Uno.prototype.shuffleDeck = function shuffleDeck(deck) {
 
 Uno.prototype.setHost = function setHost(socket) {
   this.host = socket;
+    socket.emit('host', 'You are the host');
 };
 
 Uno.prototype.addPlayer = function addPlayer(socket, name) {
@@ -69,7 +70,6 @@ Uno.prototype.addPlayer = function addPlayer(socket, name) {
 
   if (this.host === null) {
     this.setHost(socket);
-    socket.emit('host', 'You are the host');
   }
 
   this.players.push({
@@ -261,7 +261,7 @@ Uno.prototype.handleDisconnect = function handleDisconnect(socket) {
   }
   if (this.players.length > 0) {
     if (socket === this.host) {
-      this.host = this.players[0].socket;
+      this.setHost(this.players[0].socket);
     }
   } else {
     this.init();
