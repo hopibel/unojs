@@ -197,6 +197,9 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
 Uno.prototype.findCard = function findCard(card) {
   // check if current player has that card
   function matchCard(element) {
+    if (this.type === 'Wild') {
+      return element.type === this.type;
+    }
     return element.color === this.color && element.type === this.type;
   }
   return this.players[this.turn].hand.findIndex(matchCard, card);
