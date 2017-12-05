@@ -241,8 +241,8 @@ Uno.prototype.isPlayable = function isPlayable(card) {
 Uno.prototype.nextTurn = function nextTurn() {
   let next = this.turn + this.direction;
   if (next < 0) {
-    next = this.length - 1;
-  } else if (next >= this.length) {
+    next = this.players.length - 1;
+  } else if (next >= this.players.length) {
     next = 0;
   }
   return next;
