@@ -103,6 +103,10 @@ header{
 	background-color: #eee;
 	color: #222;
 }
+#players > li.winner{
+	background-color: #FFEE58;
+	color: #222;	
+}
 #table-deck{
 	display: flex;
 }
@@ -246,6 +250,8 @@ header{
 	border: 0.5em solid #FFF;
 	border-color: #EF5350 #FFEE58 #8dcf42 #42A5F5;
 	border-radius: 4px;
+	box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
+	filter: brightness(110%);
 }
 .red{
 	background-color: #EF5350;
@@ -313,12 +319,12 @@ header{
 }
 
 #draw-message{
-	left: 4em;
+	left: 6em;
 	font-style: italic;
 }
 
 #discard-message{
-	right: 4em;
+	right: 6em;
 	font-style: italic;
 }
 

@@ -73,6 +73,12 @@ socket.on('illegal move', (card) => {
 	addCard(card);
 });
 
+socket.on('game over', (winner) => {
+	var players = document.getElementById("players").children;
+	var output = document.getElementById("game-message").innerHTML = winner.name + " has won the game!";
+	players[winner.id].className = "winner";
+});
+
 socket.on('update', (turndata) => {
 	for(let i = 0; i < turndata.drawCards.length; i++){
 		addCard(turndata.drawCards[i]);
@@ -113,7 +119,7 @@ function setCurrentCard(card){
 }
 
 function checkTurn(gameTurn, myTurn){
-	var players = document.getElementById("players");
+	var players = document.getElementById("players").children;
 	for (var i = 0; i < players.length; i++) {
 		if(gameTurn == i){
 			players[i].className = "active";
