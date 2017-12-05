@@ -14,8 +14,8 @@
 
 	socket.on('player list', (playerList) => {
 		document.getElementById('playerList').innerHTML = "";
-		for(player in playerList){
-			document.getElementById('playerList').innerHTML = document.getElementById('playerList').innerHTML + player;
+		for (let i = 0; i < playerList.length; i += 1) {
+			document.getElementById('playerList').innerHTML = document.getElementById('playerList').innerHTML + playerList[i] + '<br>';
 			//Update a whole new list of players
 		}
 	})
