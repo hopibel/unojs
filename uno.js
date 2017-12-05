@@ -242,6 +242,8 @@ Uno.prototype.nextTurn = function nextTurn() {
   let next = this.turn + this.direction;
   if (next < 0) {
     next = this.length - 1;
+  } else if (next >= this.length) {
+    next = 0;
   }
   return next;
 };
