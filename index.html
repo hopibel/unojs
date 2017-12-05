@@ -30,6 +30,9 @@
 			// console.log(card);
 			//Parse the cards to show up
 		}
+		var currentCard = turndata.currentCard;
+		console.log(turndata)
+		document.getElementById('currentCard').innerHTML = currentCard.type + " " + currentCard.color;
 	})
 
 	socket.on('update', (turndata) => {
@@ -54,5 +57,12 @@
 <h1 id="playerList">PlayerList</h1>
 <h1 id="cardList">CardList</h1>
 <h1 id="myTurn">Turn</h1>
+<h1 id="currentCard">CurrentCard</h1>
 <button type="button" onclick="socket.emit('join','Dickshit')">Join</button><!--Also hide the Join Button once pressed-->
+<button type="button" onclick="socket.emit('move',{
+	type:'pass'
+	})">Pass</button>
+<button type="button" onclick="socket.emit('move',{
+	type:'draw'
+	})">Draw</button>
 <button type="button" onclick="socket.emit('start',)" id="start" style="display:none;">Startoh</button>
