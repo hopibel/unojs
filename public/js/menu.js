@@ -23,13 +23,20 @@ player_name.addEventListener("blur", function(){
 });
 
 join.addEventListener("click", function(){
+	join.style = "display: none; height: 0; transform: scale(1, 0);";	
 	player_name.className = "locked";
 	player_name.disabled = true;
-	start.style = "display: block; height: 13em; transform: scale(1, 1);";
-	join.style = "display: none; height: 0; transform: scale(1, 0);";	
+	
+	socket.emit('join', player_name.value);
+
+	
+	// start.style = "display: block; height: 13em; transform: scale(1, 1);";
 	waiting.style = "transform: scale(1,1)";
+
+
+
 });
 
 start.addEventListener("click", function(){
-	start_menu.style.top = "-100%";
+	socket.emit('start',);
 });

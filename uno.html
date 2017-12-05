@@ -2,6 +2,8 @@
 <html>
 <head>
 	<title>UNO</title>
+	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript">var socket = io();</script>
 	<link rel="stylesheet" type="text/css" href="css/uno.css">
 	<link rel="stylesheet" type="text/css" href="css/materialize_icons.css">
 </head>
@@ -20,9 +22,15 @@
 	<div class="container">
 		<header><h1 id="title">UNO</h1></header>
 		<ul id="players">
-			<li class="active"><span class="name">Hope</span></li>
+			<!-- <li class="active"><span class="name">Hope</span></li>
 			<li><span class="name">Andrew</span></li>
-			<li><span class="name">Clyde</span></li>
+			<li><span class="name">Clyde</span></li> -->
+		</ul>
+		<ul id="change-suit">
+			<li data-new-color="red"></li>
+			<li data-new-color="yellow"></li>
+			<li data-new-color="green"></li>
+			<li data-new-color="blue"></li>
 		</ul>
 		<div id="table-deck">
 			<div id="stock-pile" class="deck"></div>
@@ -31,20 +39,15 @@
 		</div>
 		<div class="game-messages">
 			<span id="draw-message">Draw a card</span>
-			<ul id="change-suit">
-				<li data-new-color="red"></li>
-				<li data-new-color="yellow"></li>
-				<li data-new-color="green"></li>
-				<li data-new-color="blue"></li>
-			</ul>
 			<h2 id="game-message">Enter your messages here</h2>
 			<span id="discard-message">Discarded pile</span>
 		</div>
 		<div id="hand-deck" class="deck"></div> 
 		<button type="button" id="pass-btn"><span class="material-icons">reply_all</span> Pass</button>
 	</div>
-	<script type="text/javascript" src="menu.js"></script>
-	<script type="text/javascript" src="messages.js"></script>
-	<script type="text/javascript" src="create_card.js"></script>
+	<script type="text/javascript" src="js/menu.js"></script>
+	<script type="text/javascript" src="js/messages.js"></script>
+	<script type="text/javascript" src="js/create_card.js"></script>
+	<script type="text/javascript" src="js/inGame.js"></script>
 </body>
 </html>

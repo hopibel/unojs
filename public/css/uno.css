@@ -186,50 +186,50 @@ header{
 	bottom: 0;
 	right: 0.25em;
 }
-.card[data-content="skip"] .type .material-icons,
-.card[data-content="reverse"] .type .material-icons{
+.card[data-content="Skip"] .type .material-icons,
+.card[data-content="Reverse"] .type .material-icons{
 	font-weight: bold;
 	font-size: 1em;
 }
-.card[data-content="skip"] .type.top,
-.card[data-content="reverse"] .type.top,
-.card[data-content="wild"] .type.top{
+.card[data-content="Skip"] .type.top,
+.card[data-content="Reverse"] .type.top,
+.card[data-content="Wild"] .type.top{
 	top: 0.25em;
 }
-.card[data-content="skip"] .type.bottom,
-.card[data-content="reverse"] .type.bottom,
-.card[data-content="wild"] .type.bottom{
+.card[data-content="Skip"] .type.bottom,
+.card[data-content="Reverse"] .type.bottom,
+.card[data-content="Wild"] .type.bottom{
 	bottom: 0.25em;
 }
 .card[data-content="down"] .type.bottom,
 .card[data-content="down"] .type.top{
 	display: none;
 }
-.card[data-content="wild-four"] .center > div{
+.card[data-content="Wild-four"] .center > div{
 	display: flex;
 	transform: translate(-0.35em, -0.3em);
 }
-.card[data-content="wild-four"] .center > div > div{
+.card[data-content="Wild-four"] .center > div > div{
 	height: 0.6em;
 	width: 0.4em;
 	position: absolute;
 }
-.card[data-content="wild-four"] .center > div > div:first-child  {transform: translate(-50%, 10%);}
-.card[data-content="wild-four"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
-.card[data-content="wild-four"] .center > div > div:nth-child(3) {transform: translate(70%, 10%);}
-.card[data-content="wild-four"] .center > div > div:last-child   {transform: translate(120%, -10%);}
+.card[data-content="Wild-four"] .center > div > div:first-child  {transform: translate(-50%, 10%);}
+.card[data-content="Wild-four"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
+.card[data-content="Wild-four"] .center > div > div:nth-child(3) {transform: translate(70%, 10%);}
+.card[data-content="Wild-four"] .center > div > div:last-child   {transform: translate(120%, -10%);}
 
-.card[data-content="draw-two"] .center > div{
+.card[data-content="Draw Two"] .center > div{
 	display: flex;
 	transform: translate(0, -0.3em);
 }
-.card[data-content="draw-two"] .center > div > div{
+.card[data-content="Draw Two"] .center > div > div{
 	height: 0.6em;
 	width: 0.4em;
 	position: absolute;
 }
-.card[data-content="draw-two"] .center > div > div:first-child  {transform: translate(-75%, 10%);}
-.card[data-content="draw-two"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
+.card[data-content="Draw Two"] .center > div > div:first-child  {transform: translate(-75%, 10%);}
+.card[data-content="Draw Two"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
 .card[data-content="down"] .center{
 	font-size: 3rem;
 	color: #FFEE58!important;
@@ -396,6 +396,26 @@ header{
 	border-radius: 50%;
 	animation: spin 0.5s linear infinite;
 }
+
+#change-suit{
+	list-style: none;
+	display: none;
+	align-items: center;
+}
+
+#change-suit > li{
+	display: inline-block;
+	background-color: white;
+	height: 1em;
+	width: 1em;
+	border-radius: 50%;
+	margin-right: 0.5em;
+}
+
+#change-suit [data-new-color="red"]{ background-color: #EF5350; }
+#change-suit [data-new-color="yellow"]{ background-color: #FFEE58; }
+#change-suit [data-new-color="green"]{ background-color: #8dcf42; }
+#change-suit [data-new-color="blue"]{ background-color: #42A5F5; }
 
 @keyframes spin{
 	0%{transform: rotate(0deg);}

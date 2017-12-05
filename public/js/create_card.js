@@ -2,7 +2,7 @@ window.onload = function(){
 	console.log("finished loading");
 
 	// errorMessage("hello");
-	promptMessage("hello");
+	// promptMessage("hello");
 
 	var hand = "hand-deck";
 	var discard = "discard-pile";
@@ -21,16 +21,16 @@ window.onload = function(){
 	// 	start_menu.style.top = "-100%";
 	// });
 
-	var newCard = createCard("black", "wild");
-	insertToDeck(newCard, hand);
-	newCard = createCard("yellow", "four");
-	insertToDeck(newCard, hand);
-	newCard = createCard("green", "draw-two");
-	insertToDeck(newCard, hand);
-	newCard = createCard("blue", "zero");
-	insertToDeck(newCard, hand);
-	newCard = createCard("red", "reverse");
-	insertToDeck(newCard, hand);
+	// var newCard = createCard("black", "wild");
+	// insertToDeck(newCard, hand);
+	// newCard = createCard("yellow", "four");
+	// insertToDeck(newCard, hand);
+	// newCard = createCard("green", "draw-two");
+	// insertToDeck(newCard, hand);
+	// newCard = createCard("blue", "zero");
+	// insertToDeck(newCard, hand);
+	// newCard = createCard("red", "reverse");
+	// insertToDeck(newCard, hand);
 
 	newCard = createCard("black", "down");
 	insertToDeck(newCard, stock);
@@ -51,8 +51,8 @@ window.onload = function(){
 	newCard = createCard("black", "down");
 	insertToDeck(newCard, discard);
 
-	newCard = createCard("black", "wild");
-	insertToDeck(newCard, current);
+	// newCard = createCard("black", "wild");
+	// insertToDeck(newCard, current);
 
 	arrange_deck(hand);
 	arrange_stock_pile();
@@ -106,24 +106,13 @@ function createCard(color, content){
 	else if (color == "blue")   { var text_color = "#42A5F5"; }
 	else if (color == "black")  { var text_color = "#222222"; }
 
-	if (content != "wild" && content != "skip" && content != "reverse" && content != "draw-two" && content != "wild-four" && content != "down") {
-		if (content == "zero") 		 { content = "0"; }
-		else if (content == "one") 	 { content = "1"; }
-		else if (content == "two") 	 { content = "2"; }
-		else if (content == "three") { content = "3"; }
-		else if (content == "four")  { content = "4"; }
-		else if (content == "five")  { content = "5"; }
-		else if (content == "six") 	 { content = "6"; }
-		else if (content == "seven") { content = "7"; }
-		else if (content == "eight") { content = "8"; }
-		else if (content == "nine")  { content = "9"; }
-
+	if (content != "Wild" && content != "Skip" && content != "Reverse" && content != "Draw Two" && content != "wild-four" && content != "down") {
 		var center_text = document.createTextNode(content);
 		var top_text 	= document.createTextNode(content);
 		var bottom_text = document.createTextNode(content);
 
-	} else if (content == "skip" || content == "reverse") {
-		if (content == "skip") { var content = "block"; } 
+	} else if (content == "Skip" || content == "Reverse") {
+		if (content == "Skip") { var content = "block"; } 
 		else { var content = "compare_arrows"; }
 
 		var icon_one   = document.createElement("i");
@@ -141,7 +130,7 @@ function createCard(color, content){
 		var bottom_text = icon_two;
 		var center_text = icon_three;
 
-	} else if (content == "draw-two") { 
+	} else if (content == "Draw Two") { 
 		content = "+2"; 
 
 		var two_cards = document.createElement("div");
@@ -185,7 +174,7 @@ function createCard(color, content){
 		var top_text = document.createTextNode(content);
 		var bottom_text = document.createTextNode(content);
 
-	} else if (content == "wild") {
+	} else if (content == "Wild") {
 		var quad_one   = document.createElement("i"); 
 		var quad_two   = document.createElement("i"); 
 		var quad_three = document.createElement("i"); 

@@ -7,7 +7,7 @@ function errorMessage(message){
 		setTimeout(function(){
 			messageBox.style = "opacity: 0; transform: translate(-50%, -50%) scale(1,0);"
 		}, 2000);
-	}, 1000);
+	}, 100);
 }
 
 function promptMessage(message){
@@ -19,5 +19,5 @@ function promptMessage(message){
 		setTimeout(function(){
 			messageBox.style = "opacity: 0; transform: translate(-50%, -50%) scale(1,0);"
 		}, 2000);
-	}, 1000);
+	}, 100);
 }
