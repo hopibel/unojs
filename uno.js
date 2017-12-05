@@ -239,7 +239,10 @@ Uno.prototype.isPlayable = function isPlayable(card) {
 };
 
 Uno.prototype.nextTurn = function nextTurn() {
-  const next = (this.turn + this.direction) % this.players.length;
+  let next = this.turn + this.direction;
+  if (next < 0) {
+    next = this.length - 1;
+  }
   return next;
 };
 
