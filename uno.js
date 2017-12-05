@@ -101,7 +101,7 @@ Uno.prototype.start = function start(socket) {
     const turndata = {
       turn: this.turn,
       yourTurn: i,
-      currentCard: this.discard[-1],
+      currentCard: this.discard[this.discard.length - 1],
       hand: this.players[i].hand,
     };
     this.players[i].socket.emit('first-turn', turndata);
@@ -189,10 +189,10 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
 
 Uno.prototype.findCard = function findCard(card) {
   // check if current player has that card
-  function findCard(element) {
+  function matchCard(element) {
     return element.color === this.color && element.type === this.type;
   }
-  return this.players[this.turn].hand.findIndex(findCard, card);
+  return this.players[this.turn].hand.findIndex(matchCard, card);
 };
 
 Uno.prototype.drawCard = function drawCard(socket) {
@@ -201,7 +201,7 @@ Uno.prototype.drawCard = function drawCard(socket) {
   socket.emit('update', {
     turn: this.turn,
     yourTurn: this.turn,
-    currentCard: this.discard[-1],
+    currentCard: this.discard[this.discard.length - 1],
     drawCards: card,
   });
 
@@ -209,7 +209,7 @@ Uno.prototype.drawCard = function drawCard(socket) {
 };
 
 Uno.prototype.isPlayable = function isPlayable(card) {
-  const topCard = this.discard[-1];
+  const topCard = this.discard[this.discard.length - 1];
   return card.type === topCard.type || card.color === topCard.color || topCard.color === 'black';
 };
 
@@ -238,7 +238,7 @@ Uno.prototype.sendTurndata = function sendTurndata(playerID, cards) {
   const turndata = {
     turn: this.turn,
     yourTurn: playerID,
-    currentCard: this.discard[-1],
+    currentCard: this.discard[this.discard.length - 1],
     drawCards: cards,
   };
   this.players[playerID].socket.emit('update', turndata);
