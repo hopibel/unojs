@@ -2,13 +2,14 @@
 <script>
 	var socket = io();
 
+
 	socket.on('host', (message) => {
 		document.getElementById('sampleText').innerHTML = message;
 		//Show the "Start button" here
 		document.getElementById('start').style.display = "inline-block";
-	})
+	});
 
-	socket.on('error', (message) => {
+	socket.on('status', (message) => {
 		document.getElementById('sampleText').innerHTML = message;
 	})
 
@@ -18,29 +19,47 @@
 			document.getElementById('playerList').innerHTML = document.getElementById('playerList').innerHTML + playerList[i] + '<br>';
 			//Update a whole new list of players
 		}
-	})
+	});
 
 	socket.on('first-turn', (turndata) => {
 		checkTurn(turndata.turn, turndata.yourTurn);
 		document.getElementById('cardList').innerHTML = '';
-		for (var i = 0; i < turndata.hand.length; i++) {
+		for (let i = 0; i < turndata.hand.length; i++) {
 			var type = turndata.hand[i].type;
 			var color = turndata.hand[i].color;
 			document.getElementById('cardList').innerHTML = document.getElementById('cardList').innerHTML + type + " " + color + " - ";
 			// console.log(card);
 			//Parse the cards to show up
 		}
-		var currentCard = turndata.currentCard;
-		console.log(turndata)
-		document.getElementById('currentCard').innerHTML = currentCard.type + " " + currentCard.color;
-	})
+		setCurrentCard(turndata.currentCard);
+	});
 
 	socket.on('update', (turndata) => {
-		checkTurn(turndata.turn, turndata.yourTurn);
-		if(turndata.drawCards.length > 0){
-			var card = turndata.drawCards;
+		for(let i = 0; i < turndata.drawCards.length; i++){
+			addCard(turndata.drawCards[i]);
 		}
-	})
+		checkTurn(turndata.turn, turndata.yourTurn);
+		setCurrentCard(turndata.currentCard);
+	});
+
+	function playCard(type, color){
+		console.log("Playing card " + type + " " + color);
+		socket.emit('move', {
+			type:'card',
+			card:{
+				type:type,
+				color:color,
+			}
+		});
+	}
+
+	function addCard(card){
+		document.getElementById('cardList').innerHTML = document.getElementById('cardList').innerHTML + card.type + " " + card.color + " - ";
+	}
+
+	function setCurrentCard(card){
+		document.getElementById('currentCard').innerHTML = card.type + " " + card.color;
+	}
 
 	function checkTurn(gameTurn, myTurn){
 		if (gameTurn === myTurn){
@@ -52,17 +71,24 @@
 			//Could make literally everything else unclickable (to avoid errors or some shit)
 		}
 	}
+
 </script>
-<h1 id="sampleText">Hi</h1>
-<h1 id="playerList">PlayerList</h1>
-<h1 id="cardList">CardList</h1>
-<h1 id="myTurn">Turn</h1>
-<h1 id="currentCard">CurrentCard</h1>
-<button type="button" onclick="socket.emit('join','Dickshit')">Join</button><!--Also hide the Join Button once pressed-->
-<button type="button" onclick="socket.emit('move',{
-	type:'pass'
-	})">Pass</button>
-<button type="button" onclick="socket.emit('move',{
-	type:'draw'
-	})">Draw</button>
-<button type="button" onclick="socket.emit('start',)" id="start" style="display:none;">Startoh</button>
+<body>
+	<h1 id="sampleText">Hi</h1>
+	<h1 id="playerList">PlayerList</h1>
+	<h1 id="cardList">CardList</h1>
+	<h1 id="myTurn">Turn</h1>
+	<h1 id="currentCard">CurrentCard</h1>
+	<button type="button" onclick="socket.emit('join','Dickshit')">Join</button><!--Also hide the Join Button once pressed-->
+	<button type="button" onclick="socket.emit('move',{
+		type:'pass'
+		})">Pass</button>
+	<button type="button" onclick="socket.emit('move',{
+		type:'draw'
+		})">Draw</button>
+	<button type="button" onclick="socket.emit('start',)" id="start" style="display:none;">Startoh</button>
+	</br>
+	<input type="text" id="playCardType">
+	<input type="text" id="playCardColor">
+	<button type="button" id="playCardNow" onclick="playCard(document.getElementById('playCardType').value, document.getElementById('playCardColor').value)">Play Card</button>
+</body>

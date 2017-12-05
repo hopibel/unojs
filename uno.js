@@ -16,7 +16,10 @@ Uno.prototype.init = function init() {
 
 Uno.prototype.generateDeck = function generateDeck() {
   const colors = ['red', 'yellow', 'green', 'blue'];
-  const types = [...Array(10).keys()];
+  const types = [];
+  for (let i = 0; i <= 9; i += 1) {
+    types.push(i.toString());
+  }
   types.concat(['Skip', 'Reverse', 'Draw Two']);
 
   const deck = [];
