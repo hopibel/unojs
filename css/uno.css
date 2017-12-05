@@ -1,0 +1,286 @@
+*{
+	box-sizing: border-box;
+}
+body{
+	background-color: #111;
+	margin: 0;
+}
+.container{
+	min-height: 97vh;
+}
+#start-menu{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100vh;
+	width: 100vw;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background-color: #111;
+	z-index: 1000;
+	transition: 1.5s;
+}
+#start-menu > button{
+	transition: 0.2s;
+}
+#start-menu > button:hover{
+	cursor: pointer;
+	transform: translate(0, -1em);
+	filter: brightness(110%);
+}
+#start-menu > button .label{
+	font-family: Oswald;
+	color: white;
+	text-transform: uppercase;
+	font-size: 2em;
+}
+header{
+	display: flex;
+	align-items: end;
+}
+#title{
+	/* color: white; */
+	font-family: "Oswald";
+	font-weight: normal;
+	margin: 0;
+	color: #FFEE58;
+	background-color: #EF5350;
+	border-radius: 80% 20% 80% 20%;
+	padding: 0 0.25em;
+	/* box-shadow: 0.075em 0 0 #EEE;
+	text-shadow: 0.075em 0 0 #444; */
+	letter-spacing: 0.15em;
+}
+#players{
+	display: flex;
+	font-family: "Oswald Light";
+	font-weight: bold;
+	letter-spacing: 0.05em;
+	color: white;
+	list-style: none;
+	justify-content: center;
+	padding: 0;
+}
+#players > li{
+	padding: 0.1em 0.25em;
+	border-radius: 4px;
+}
+#players > li.active{
+	background-color: #eee;
+	color: #222;
+}
+#table-deck{
+	display: flex;
+}
+#table-deck .deck{
+	/* width: 33%; */
+}
+.deck{
+	display: flex;
+	margin: auto;
+}
+#hand-deck, #stock-pile, #current-card, #discard-pile{
+	position: relative;
+	width: calc(100vw - 8.1em);
+	height: 13em;
+	margin: 1em 4em;
+}
+#hand-deck .card, #stock-pile .card,
+#current-card .card, #discard-pile .card{
+	position: absolute;
+	transition: 0.5s;
+}
+#hand-deck{
+	justify-content: space-between;
+	/* transform: translate(-50%, 0); */
+}
+#hand-deck .card:hover{
+	transform: translate(0, -2.5em);
+	cursor: pointer;
+}
+#hand-deck .card:not(:first-child):not(:last-child):hover{
+	transform: translate(0, -2.5em);
+}
+#hand-deck .card:hover + .card{
+	transform: translate(0, -1em);
+}
+#hand-deck .card:hover + .card + .card{
+	transform: translate(0, -0.5em);
+}
+#current-card{
+	width: 100%;
+}
+#current-card .card{
+	left: 50%;
+	transform: translate(-50%, 0);
+}
+.card{
+	border: 0.5em solid #FFF;
+	border-radius: 0.5em;
+	height: 13em;
+	width: 8.5em;
+	margin: 0 0.25em 0.5em 0.25em;
+	box-shadow: 0 0 1em rgba(0, 0, 0, 0.5);
+}
+.card .type{
+	color: white;
+	font-family: Oswald;
+	position: absolute;
+	/* background-color: white; */
+	display: inline-flex;
+	font-size: 1.5em;
+	/* width: 1.5em; */
+	align-items: center;
+	justify-content: center;
+	border-radius: 8px 4px 8px 4px;
+}
+.card .top{
+	top: 0;
+	left: 0.25em;
+}
+.card .center{
+	top: 50%;
+	left: 50%;
+	height: 8.5rem;
+	width: 8.5rem;
+	background-color: white;
+	transform: translate(-50%, -50%);
+	border-radius: 80% 20% 80% 20%;
+	font-size: 5em;
+}
+.card .bottom{
+	bottom: 0;
+	right: 0.25em;
+}
+.card[data-content="skip"] .type .material-icons,
+.card[data-content="reverse"] .type .material-icons{
+	font-weight: bold;
+	font-size: 1em;
+}
+.card[data-content="skip"] .type.top,
+.card[data-content="reverse"] .type.top,
+.card[data-content="wild"] .type.top{
+	top: 0.25em;
+}
+.card[data-content="skip"] .type.bottom,
+.card[data-content="reverse"] .type.bottom,
+.card[data-content="wild"] .type.bottom{
+	bottom: 0.25em;
+}
+.card[data-content="down"] .type.bottom,
+.card[data-content="down"] .type.top{
+	display: none;
+}
+.card[data-content="wild-four"] .center > div{
+	display: flex;
+	transform: translate(-0.35em, -0.3em);
+}
+.card[data-content="wild-four"] .center > div > div{
+	height: 0.6em;
+	width: 0.4em;
+	position: absolute;
+}
+.card[data-content="wild-four"] .center > div > div:first-child  {transform: translate(-50%, 10%);}
+.card[data-content="wild-four"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
+.card[data-content="wild-four"] .center > div > div:nth-child(3) {transform: translate(70%, 10%);}
+.card[data-content="wild-four"] .center > div > div:last-child   {transform: translate(120%, -10%);}
+
+.card[data-content="draw-two"] .center > div{
+	display: flex;
+	transform: translate(0, -0.3em);
+}
+.card[data-content="draw-two"] .center > div > div{
+	height: 0.6em;
+	width: 0.4em;
+	position: absolute;
+}
+.card[data-content="draw-two"] .center > div > div:first-child  {transform: translate(-75%, 10%);}
+.card[data-content="draw-two"] .center > div > div:nth-child(2) {transform: translate(0, -10%);}
+.card[data-content="down"] .center{
+	font-size: 3rem;
+	color: #FFEE58!important;
+	background-color: #EF5350;
+	height: 7.5rem;
+	width: 7.5rem;
+}
+.center .quad{
+	border-radius: 50%;
+	transform: rotate(45deg) scale(1, 1.75) rotate(45deg);
+}
+.quad{
+	display: block;
+	border: 0.5em solid #FFF;
+	border-color: #EF5350 #FFEE58 #8dcf42 #42A5F5;
+	border-radius: 4px;
+}
+.red{
+	background-color: #EF5350;
+}
+.yellow{
+	background-color: #FFEE58;
+}
+.green{
+	background-color: #8dcf42;
+}
+.blue{
+	background-color: #42A5F5;
+}
+.black{
+	background-color: #222;
+}
+.one{
+}
+
+#discard-pile{
+	justify-content: flex-end;
+}
+
+#stock-pile:hover > .card:last-child{
+	transform: translate(1em, 1em);
+	cursor: pointer;
+}
+
+.card-count{
+	border: 0.25em solid #FFF;
+	border-radius: 0.2em;
+	background-color: #EF5350;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 4em;
+	display: none;
+}
+
+#game-message{
+	color: white;
+	font-family: "Oswald Light";
+	text-align: center;
+	margin-top: 0;
+	font-weight: normal;
+}
+
+#pass-btn{
+	font-family: Oswald;
+	text-transform: uppercase;
+	background-color: #EF5350;
+	color: white;
+	border: none;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	font-size: 2em;
+	padding: 0.5em 1em;
+	border: 0.5em solid white;
+	border-width: 0.25em 0 0 0.25em;
+	border-radius: 0.5em 0 0 0;
+	box-shadow: 0 0 1em rgba(0, 0, 0, 0.3);
+	transition: 0.2s;
+}
+
+#pass-btn .material-icons
+
+#pass-btn:hover{
+	cursor: pointer;
+	padding: 0.5em 1.5em 0.75em 1em;
+}
