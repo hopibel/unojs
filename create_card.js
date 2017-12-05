@@ -1,6 +1,9 @@
 window.onload = function(){
 	console.log("finished loading");
 
+	// errorMessage("hello");
+	promptMessage("hello");
+
 	var hand = "hand-deck";
 	var discard = "discard-pile";
 	var current = "current-card";
@@ -48,7 +51,7 @@ window.onload = function(){
 	newCard = createCard("black", "down");
 	insertToDeck(newCard, discard);
 
-	newCard = createCard("black", "wild-four");
+	newCard = createCard("black", "wild");
 	insertToDeck(newCard, current);
 
 	arrange_deck(hand);

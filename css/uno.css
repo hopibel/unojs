@@ -20,20 +20,53 @@ body{
 	background-color: #111;
 	z-index: 1000;
 	transition: 1.5s;
+	flex-direction: column;
 }
-#start-menu > button{
+#player-name{
+	width: 30%;
+	font-family: "Oswald Light";
+	padding: 0.25em 1em;
+	font-size: 2em;
+	border-radius: 0.5rem;
+	border: none;
+	margin-bottom: 1rem;
+	color: #222;
+	text-align: center;
 	transition: 0.2s;
+	font-weight: bold;
 }
-#start-menu > button:hover{
+#player-name.locked{
+	background-color: transparent;
+	border-color: transparent;
+	color: white;
+}
+#player-name:focus,
+#player-name:active{
+	outline: none;
+}
+#start-menu > .button-group{
+	display: flex;
+}
+#start-menu > .button-group > button{
+	transition: 0.2s;
+	margin: 0.25em 1em;
+	transform: scale(1, 0);
+	transform-origin: center top;
+	height: 0;
+}
+#start-menu > .button-group > button:hover{
 	cursor: pointer;
 	transform: translate(0, -1em);
 	filter: brightness(110%);
 }
-#start-menu > button .label{
+#start-menu > .button-group > button .label{
 	font-family: Oswald;
 	color: white;
 	text-transform: uppercase;
 	font-size: 2em;
+}
+#start{
+	display: none;
 }
 header{
 	display: flex;
@@ -252,12 +285,41 @@ header{
 	display: none;
 }
 
+.game-messages{
+	position: relative;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.game-messages > *{
+	position: absolute;
+	font-family: "Oswald Light";
+	color: white;
+}
+
+#change-suit{
+	display: flex;
+	padding: 0;
+	margin: 0;
+}
+
 #game-message{
 	color: white;
 	font-family: "Oswald Light";
 	text-align: center;
 	margin-top: 0;
 	font-weight: normal;
+}
+
+#draw-message{
+	left: 4em;
+	font-style: italic;
+}
+
+#discard-message{
+	right: 4em;
+	font-style: italic;
 }
 
 #pass-btn{
@@ -278,9 +340,64 @@ header{
 	transition: 0.2s;
 }
 
-#pass-btn .material-icons
+#pass-btn .material-icons{
+	font-size: 1.5em;
+}
 
 #pass-btn:hover{
 	cursor: pointer;
 	padding: 0.5em 1.5em 0.75em 1em;
+}
+
+.message{
+	/* display: none; */
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%) scale(1, 0);
+	z-index: 2000;
+	background-color: white;
+	width: 50%;
+	font-family: "Oswald Light";
+	padding: 0.25em 1em;
+	text-align: center;
+	border-radius: 0.5rem;
+	font-size: 1.25em;
+	opacity: 0;
+	transform-origin: center top;
+	transition: 0.3s;
+}
+
+.message.prompt{ color: #42A5F5; }
+.message.error{ color: #EF5350; }
+
+#waiting{
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+	transform: scale(1, 0);
+	margin-top: 1em;
+}
+
+#waiting .waiting-message{
+	color: white;
+	font-family: "Oswald Light";
+	font-style: italic;
+	font-size: 1.5em;
+	margin-top: 0.25em;
+}
+
+.spinner{
+	display: flex;
+	height: 2em;
+	width: 2em;
+	border: 0.25em solid #DDD;
+	border-color: transparent rgba(255, 255, 255, 0.15) rgba(255, 255, 255, 0.25) rgba(255, 255, 255, 1);
+	border-radius: 50%;
+	animation: spin 0.5s linear infinite;
+}
+
+@keyframes spin{
+	0%{transform: rotate(0deg);}
+	100%{transform: rotate(360deg);}
 }

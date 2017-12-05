@@ -6,14 +6,17 @@
 	<link rel="stylesheet" type="text/css" href="css/materialize_icons.css">
 </head>
 <body>
-	<!-- <div class="container" id="start-menu">
-		<input type="text" name="player_name" id="player-name"/>
-
-		<button id="start" class="card blue"><span class="label">Host</span></button>
-		<button id="join" class="card green"><span class="label">Join</span></button>
-	</div> -->
-	<!-- <div id="error-message"></div> -->
-	<!-- <div id="prompt-message"></div> -->
+	<div class="container" id="start-menu">
+		<input type="text" name="player_name" id="player-name" placeholder="Enter player name" />
+		<div class="button-group">
+			<button id="start" class="card blue"><span class="label">Start</span></button>
+			<button id="join" class="card green"><span class="label">Join</span></button>
+		</div>
+		<div id="waiting"><i class="spinner"></i><span class="waiting-message">Waiting for host to start the game.</span></div>
+	</div>
+	<div id="error-message" class="message error">This is an error message</div>
+	<div id="prompt-message" class="message prompt">This is a prompt message</div>
+	<!-- <div id="success-message" class="message success">This is a success message</div> -->
 	<div class="container">
 		<header><h1 id="title">UNO</h1></header>
 		<ul id="players">
@@ -26,10 +29,22 @@
 			<div id="current-card" class="deck"></div>
 			<div id="discard-pile" class="deck"></div>
 		</div>
-		<h2 id="game-message">Enter your messages here</h2>
+		<div class="game-messages">
+			<span id="draw-message">Draw a card</span>
+			<ul id="change-suit">
+				<li data-new-color="red"></li>
+				<li data-new-color="yellow"></li>
+				<li data-new-color="green"></li>
+				<li data-new-color="blue"></li>
+			</ul>
+			<h2 id="game-message">Enter your messages here</h2>
+			<span id="discard-message">Discarded pile</span>
+		</div>
 		<div id="hand-deck" class="deck"></div> 
 		<button type="button" id="pass-btn"><span class="material-icons">reply_all</span> Pass</button>
 	</div>
+	<script type="text/javascript" src="menu.js"></script>
+	<script type="text/javascript" src="messages.js"></script>
 	<script type="text/javascript" src="create_card.js"></script>
 </body>
 </html>
