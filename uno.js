@@ -16,11 +16,11 @@ Uno.prototype.init = function init() {
 
 Uno.prototype.generateDeck = function generateDeck() {
   const colors = ['red', 'yellow', 'green', 'blue'];
-  const types = [];
+  let types = [];
   for (let i = 0; i <= 9; i += 1) {
     types.push(i.toString());
   }
-  types.concat(['Skip', 'Reverse', 'Draw Two']);
+  types = types.concat(['Skip', 'Reverse', 'Draw Two']);
 
   const deck = [];
   for (let i = 0; i < colors.length; i += 1) {
@@ -59,7 +59,7 @@ Uno.prototype.shuffleDeck = function shuffleDeck(deck) {
 
 Uno.prototype.setHost = function setHost(socket) {
   this.host = socket;
-    socket.emit('host', 'You are the host');
+  socket.emit('host', 'You are the host');
 };
 
 Uno.prototype.addPlayer = function addPlayer(socket, name) {
@@ -129,6 +129,9 @@ Uno.prototype.draw = function draw(n) {
 
 Uno.prototype.playTurn = function playTurn(socket, turndata) {
   // Process a turn
+  if (this.started === false) {
+    socket.emit('status', 'No game running');
+  }
   if (socket !== this.players[this.turn].socket) {
     socket.emit('status', 'It is not your turn');
     return;
@@ -178,6 +181,9 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
       return;
     }
     case 'pass':
+      if (this.hasDrawn === false) {
+        socket.emit('status', 'You have to draw a card first');
+      }
       break;
     default:
       // wtf
