@@ -56,7 +56,7 @@ Uno.prototype.setHost = function setHost(socket) {
 
 Uno.prototype.addPlayer = function addPlayer(socket, name) {
   if (this.started === true) {
-    socket.emit('error', 'Game already started');
+    socket.emit('status', 'Game already started');
     return;
   }
 
@@ -81,7 +81,7 @@ Uno.prototype.addPlayer = function addPlayer(socket, name) {
 
 Uno.prototype.start = function start(socket) {
   if (socket !== this.host) {
-    socket.emit('error', 'You are not the host');
+    socket.emit('status', 'You are not the host');
   }
 
   this.deck = this.generateDeck();
@@ -123,7 +123,7 @@ Uno.prototype.draw = function draw(n) {
 Uno.prototype.playTurn = function playTurn(socket, turndata) {
   // Process a turn
   if (socket !== this.players[this.turn].socket) {
-    socket.emit('error', 'It is not your turn');
+    socket.emit('status', 'It is not your turn');
     return;
   }
 
@@ -131,10 +131,10 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
     case 'card': {
       const cardIndex = this.findCard(turndata.card);
       if (cardIndex === -1) {
-        socket.emit('error', "You don't even have that card!");
+        socket.emit('status', "You don't even have that card!");
         return;
       } else if (this.isPlayable(turndata.card) === false) {
-        socket.emit('error', 'Illegal move');
+        socket.emit('status', 'Illegal move');
         return;
       }
 
@@ -163,7 +163,7 @@ Uno.prototype.playTurn = function playTurn(socket, turndata) {
     }
     case 'draw': {
       if (this.hasDrawn) {
-        socket.emit('error', 'Already drawn a card this turn');
+        socket.emit('status', 'Already drawn a card this turn');
         return;
       }
       const drawCard = this.drawCard(socket);
