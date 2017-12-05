@@ -130,6 +130,7 @@ Uno.prototype.draw = function draw(playerID, n) {
 
 Uno.prototype.playTurn = function playTurn(socket, turndata) {
   // Process a turn
+  console.log(this.turn);
   if (this.started === false) {
     socket.emit('status', 'No game running');
   }
@@ -243,13 +244,10 @@ Uno.prototype.nextTurn = function nextTurn() {
 };
 
 Uno.prototype.isWinner = function isWinner() {
-  console.log(this.players[this.turn]);
   if (this.players[this.turn].hand.length === 0) {
     this.io.sockets.emit('game over', {
-      winner: {
-        name: this.players[this.turn].name,
-        id: this.turn,
-      },
+      name: this.players[this.turn].name,
+      id: this.turn,
     });
     return true;
   }
